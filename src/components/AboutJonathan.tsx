@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { ArrowRight, MapPin, Building, ShieldCheck, Mail, Phone } from "lucide-react";
+import jonathanHeadshot from "../../public/images/jonathan_headshot.jpg";
 
 interface AboutJonathanProps {
   onOpenContact: () => void;
@@ -23,7 +24,7 @@ export function AboutJonathan({ onOpenContact, onOpenHomeValue }: AboutJonathanP
               <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-[#161515] border border-[#D8D3CB]">
                 <div className="relative aspect-[4/5] w-full">
                   <Image
-                    src="/images/jonathan_headshot.jpg"
+                    src={jonathanHeadshot}
                     alt="Jonathan Velasquez Ramirez - New Jersey Real Estate Professional"
                     fill
                     sizes="(max-width: 1024px) 100vw, 450px"

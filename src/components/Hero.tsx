@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { ArrowRight, ArrowUpRight, ShieldCheck, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import jonathanExecutive from "../../public/images/jonathan_executive.jpg";
+import jonathanHeadshot from "../../public/images/jonathan_headshot.jpg";
 
 interface HeroProps {
   onOpenHomeValue: () => void;
@@ -49,7 +51,7 @@ export function Hero({ onOpenHomeValue, onOpenContact }: HeroProps) {
               <div className="lg:hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-[11px] text-[#D8D3CB]">
                 <div className="relative w-4 h-4 rounded-full overflow-hidden shrink-0">
                   <Image
-                    src="/images/jonathan_headshot.jpg"
+                    src={jonathanHeadshot}
                     alt="Jonathan"
                     fill
                     className="object-cover"
@@ -121,7 +123,7 @@ export function Hero({ onOpenHomeValue, onOpenContact }: HeroProps) {
               <div className="relative rounded-2xl bg-[#161515] p-2.5 border border-white/15 shadow-2xl overflow-hidden">
                 <div className="relative aspect-[4/5] w-full rounded-xl overflow-hidden bg-[#242021]">
                   <Image
-                    src="/images/jonathan_executive.jpg"
+                    src={jonathanExecutive}
                     alt="Jonathan Velasquez - New Jersey Real Estate Specialist"
                     fill
                     sizes="(max-width: 768px) 340px, 400px"

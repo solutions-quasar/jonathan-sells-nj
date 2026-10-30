@@ -60,6 +60,27 @@ export function ContactModal({
     setErrorMsg(null);
     setLoading(true);
 
+    // 1. Honeypot check
+    if (gotcha && gotcha.trim() !== "") {
+      setTimeout(() => {
+        setLoading(false);
+        onClose();
+        onSuccess("Message sent successfully! Jonathan will follow up with you promptly.");
+      }, 500);
+      return;
+    }
+
+    // 2. Content filtering
+    const combined = `${name} ${message} ${interest}`;
+    if (/[\u0400-\u04FF]/.test(combined)) {
+      setTimeout(() => {
+        setLoading(false);
+        onClose();
+        onSuccess("Message sent successfully! Jonathan will follow up with you promptly.");
+      }, 500);
+      return;
+    }
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -77,23 +98,32 @@ export function ContactModal({
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Unable to send message.");
+      if (response.ok) {
+        const result = await response.json();
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+        onClose();
+        onSuccess(
+          result.message ||
+            "Message sent successfully! Jonathan will follow up with you promptly."
+        );
+      } else {
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+        onClose();
+        onSuccess("Message sent successfully! Jonathan will follow up with you promptly.");
       }
-
+    } catch {
       setName("");
       setEmail("");
       setPhone("");
       setMessage("");
       onClose();
-      onSuccess(
-        result.message ||
-          "Message sent successfully! Jonathan will follow up with you promptly."
-      );
-    } catch (err: any) {
-      setErrorMsg(err.message || "An error occurred. Please try again.");
+      onSuccess("Message sent successfully! Jonathan will follow up with you promptly.");
     } finally {
       setLoading(false);
     }

@@ -23,6 +23,27 @@ export function HomeValueSection({ onSuccess }: HomeValueSectionProps) {
     setErrorMsg(null);
     setLoading(true);
 
+    // 1. Honeypot check
+    if (gotcha && gotcha.trim() !== "") {
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+        onSuccess("Thank you! Jonathan will prepare your custom market analysis.");
+      }, 500);
+      return;
+    }
+
+    // 2. Content filtering
+    const combined = `${propertyAddress} ${name} ${timeframe}`;
+    if (/[\u0400-\u04FF]/.test(combined)) {
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+        onSuccess("Thank you! Jonathan will prepare your custom market analysis.");
+      }, 500);
+      return;
+    }
+
     try {
       const response = await fetch("/api/home-value", {
         method: "POST",
@@ -40,19 +61,24 @@ export function HomeValueSection({ onSuccess }: HomeValueSectionProps) {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Unable to submit valuation request.");
+      if (response.ok) {
+        const result = await response.json();
+        setSubmitted(true);
+        onSuccess(
+          result.message ||
+            "Thank you! Jonathan will review recent neighborhood comps and prepare your custom market analysis."
+        );
+      } else {
+        setSubmitted(true);
+        onSuccess(
+          "Thank you! Jonathan will review recent neighborhood comps and prepare your custom market analysis."
+        );
       }
-
+    } catch {
       setSubmitted(true);
       onSuccess(
-        result.message ||
-          "Thank you! Jonathan will review recent neighborhood comps and prepare your custom market analysis."
+        "Thank you! Jonathan will review recent neighborhood comps and prepare your custom market analysis."
       );
-    } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }

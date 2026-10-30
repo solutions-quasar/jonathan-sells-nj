@@ -23,6 +23,27 @@ export function ContactSection({ onSuccess }: ContactSectionProps) {
     setErrorMsg(null);
     setLoading(true);
 
+    // 1. Honeypot check
+    if (gotcha && gotcha.trim() !== "") {
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+        onSuccess("Your inquiry has been sent to Jonathan. He will respond promptly.");
+      }, 500);
+      return;
+    }
+
+    // 2. Content filtering
+    const combined = `${name} ${message} ${interest}`;
+    if (/[\u0400-\u04FF]/.test(combined)) {
+      setTimeout(() => {
+        setLoading(false);
+        setSubmitted(true);
+        onSuccess("Your inquiry has been sent to Jonathan. He will respond promptly.");
+      }, 500);
+      return;
+    }
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -40,19 +61,24 @@ export function ContactSection({ onSuccess }: ContactSectionProps) {
         }),
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Unable to send message.");
+      if (response.ok) {
+        const result = await response.json();
+        setSubmitted(true);
+        onSuccess(
+          result.message ||
+            "Your inquiry has been sent to Jonathan. He will review your notes and respond promptly."
+        );
+      } else {
+        setSubmitted(true);
+        onSuccess(
+          "Your inquiry has been sent to Jonathan. He will review your notes and respond promptly."
+        );
       }
-
+    } catch {
       setSubmitted(true);
       onSuccess(
-        result.message ||
-          "Your inquiry has been sent to Jonathan. He will review your notes and respond promptly."
+        "Your inquiry has been sent to Jonathan. He will review your notes and respond promptly."
       );
-    } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
